@@ -6,8 +6,8 @@ import gspread
 import requests
 from google.oauth2.service_account import Credentials
 
-TOKEN = os.environ["TELEGRAM_TOKEN"]
-SHEET_ID = os.environ["SHEET_ID"]
+TOKEN = os.environ["TELEGRAM_TOKEN"].strip()
+SHEET_ID = os.environ["SHEET_ID"].strip()
 ALLOWED = os.environ.get("ALLOWED_CHAT_ID", "").strip()
 TZ = ZoneInfo("Australia/Sydney")
 API = f"https://api.telegram.org/bot{TOKEN}"
