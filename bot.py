@@ -8,7 +8,7 @@ from google.oauth2.service_account import Credentials
 
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 SHEET_ID = os.environ["SHEET_ID"]
-ALLOWED = os.environ.get("ALLOWED_CHAT_ID", "").strip()
+ALLOWED = [x.strip() for x in os.environ.get("ALLOWED_CHAT_ID", "").split(",") if x.strip()]
 TZ = ZoneInfo("Australia/Sydney")
 API = f"https://api.telegram.org/bot{TOKEN}"
 HEADERS = ["Date", "Description", "Category", "Cost", "Currency"]
@@ -175,7 +175,12 @@ def main():
         if not ALLOWED:
             reply(chat_id, f"Setup: add ALLOWED_CHAT_ID = {chat_id} as a GitHub secret, then message me again.")
             continue
-        if str(chat_id) != ALLOWED:
+        if str(chat_id) not in ALLOWED:
+            who = msg.get("from", {})
+            reply(chat_id, "Not authorised yet. The owner has been told.")
+            reply(ALLOWED[0], f"Unauthorised message from {who.get('first_name', '?')} "
+                              f"(@{who.get('username', '-')}), chat ID {chat_id}. "
+                              f"Add it to ALLOWED_CHAT_ID to allow them.")
             continue
         try:
             cmd = text.split()[0].lower().split("@")[0]
